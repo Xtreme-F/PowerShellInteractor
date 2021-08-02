@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.ArrayList;
 
 import tool.StreamReader;
 
@@ -31,8 +32,11 @@ public class PowerShellProcess {
 	Process process;
 	ProcessBuilder builder;
 	
+	private ArrayList<String> outputlines;
+	
 	public PowerShellProcess() throws IOException{
 		//"-NoExit" , "-OutputFormat"
+		outputlines = new ArrayList<String>();
 		builder = new ProcessBuilder("powershell.exe", "-InputFormat", "Text", "-Command", "-");
 		
 		process = builder.start();
@@ -42,10 +46,9 @@ public class PowerShellProcess {
 		
 		writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 		
-		
-		inputreader = new StreamReader(process.getInputStream(), System.out);
+		inputreader = new StreamReader(process.getInputStream(), System.out, outputlines);
 		inputreader.start();
-		errreader = new StreamReader(process.getErrorStream(), System.err);
+		errreader = new StreamReader(process.getErrorStream(), System.err, outputlines);
 		errreader.start();
 	}
 	
@@ -62,6 +65,14 @@ public class PowerShellProcess {
 	public void endProcess() {
 		process.destroy();
 	}
+	
+	public ArrayList<String> retrieveOutput(){
+    	return outputlines;
+    }
+    
+    public void flushOutput() {
+    	outputlines = new ArrayList<String>();
+    }
 	
 	public static void main(String[] args) {
 		try {

@@ -14,8 +14,8 @@ public class StreamReader extends Thread {
     private OutputStream out;
     private ArrayList<String> outputlines;
 
-    public StreamReader(InputStream in, OutputStream out) {
-    	outputlines = new ArrayList<String>();
+    public StreamReader(InputStream in, OutputStream out, ArrayList<String> outputstore) {
+    	outputlines = outputstore;
         this.in = in;
         this.out = out;
         running.set(true);
